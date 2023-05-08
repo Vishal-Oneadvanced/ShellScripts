@@ -1,22 +1,41 @@
 #!/bin/bash
 
-filename=log.txt
+#Variable Declarations
+FILE_NAME_PROP="Propeties.properties"
 flag=true;
-MAP_NAMES="TXAMAP TXAVARNT"
-MAP_BACKUP_PATH='C:/Project_E5H5_Files/Backups/Test/'
+instance_choice=$1
 
-
-# Fucntions
+# Functions
 function CopyData()
 {
-	psql -h localhost -p 5432 -U newui_e5h5 -d newui -c "\copy (select * from $1) TO '$MAP_BACKUP_PATH$1.csv' WITH CSV HEADER"
-	echo "Copying $1 is Completed"
+	psql -h $HOST -p $instance_port -U ${USER_NAME[$instance_choice]} -d ${DBNAME[$instance_choice]} -c "\copy (select * from $1 where map='MANH') TO '$MAP_BACKUP_PATH$1.csv' WITH CSV HEADER"
+	echo "Copying data from table $1 is Completed"
 }
 
+#Reading the properties file.
+if [ -f "$FILE_NAME_PROP" ]
+then
+  echo "$FILE_NAME_PROP found."
+  while IFS='=' read -r key value
+  do
+  
+	if [[ $value =~ "," ]]; then
+	IFS=',' read -r -a array <<< $value
+	eval "$key=(${array[@]})"
+	else
+	eval "${key}=\"${value}\""
+	fi
+  done < "$FILE_NAME_PROP"
+else
+  echo "$FILE_NAME_PROP not found."
+fi
+
+#Checking if instance is connected
 while true
 do
 if [ ! -f "$filename" ]; then
 	echo 'Instance is not Started'
+	echo "flag = $flag"
 	if $flag; then
 		echo 'Waiting for Instance to start'
 		sleep 3m
@@ -29,41 +48,31 @@ else
 	break
 fi
 done
+
+#Main functioning to export table data
 while read line; do
-# reading each line
 if [[ $line == *"Waiting for connections..."* ]]; then
-	
+	now="$(date +'%d_%m_%Y')"
 	flag=false
 	echo 'PostGres Service is Running'
-	echo 'Set Encoding to UFT-8'
 	set PGCLIENTENCODING=utf-8
+	export PGPASSWORD=${DBPASSWORD[$instance_choice]}
+	echo 'Copying Table takes some time. Please wait...'
 
-	export PGPASSWORD=$DBPASSWORD
-
-	echo "Connecting to Postgres and trying to copy Data"
-	
-	echo 'Copying Table is takes some time.'
-	
-	for a in $MAP_NAMES
+	for a in $table_name
 	do
 		CopyData $a
 	done
 
-	echo 'Copying map is Completed'
+	echo 'Copying the table data is Completed'
 	
 	echo "Changind Directory"
-	cd $MAP_BACKUP_PATH
+	cd $MAP_BACKUP_PATH	
 	
-	now="$(date +'%b_%d_%Y')"
-	echo "Taking backup for $now"
-	
-	echo "Creating zip file"
-	7z a -t7z Backup_$now.zip *.csv	
-	
-	#POSTGRES_PORT=`netstat -ano | findstr :5432 | awk '{ gsub("\"","") ; print $5 }'`
-	
-	echo "Closing PostGres Port"
-	#TSKILL $POSTGRES_PORT
+	echo "Taking backup for $now and Creating zip file"
 
+	7z a -t7z Backup_$now.zip *.csv	
+	echo "Backup zip has been created"
+	rm *.csv
 fi 
 done < $filename 
