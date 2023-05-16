@@ -62,7 +62,7 @@ cd $current_Directory
 
 
 echo "Starting Postgres Service"
-aws ssm start-session --target $instanceID --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters '{"host":["'${instance_host[$instance_choice]}'"],"portNumber":["'$instance_port'"], "localPortNumber":["'$instance_port'"]}' > $current_Directory/log.txt
+aws ssm start-session --target $instanceID --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters '{"host":["'${instance_host}'"],"portNumber":["'$instance_port'"], "localPortNumber":["'$instance_port'"]}' > $current_Directory/log.txt
 
 
 
