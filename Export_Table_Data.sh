@@ -8,7 +8,8 @@ instance_choice=$1
 # Functions
 function CopyData()
 {
-	psql -h $HOST -p $instance_port -U ${USER_NAME[$instance_choice]} -d ${DBNAME[$instance_choice]} -c "\copy (select * from $1 where map='MANH') TO '$MAP_BACKUP_PATH$1.csv' WITH CSV HEADER"
+	psql -h $HOST -p $instance_port -U ${USER_NAME[$instance_choice]} -d ${DBNAME[$instance_choice]} -c "\copy (select * from $1 where map like 'M%') TO '$MAP_BACKUP_PATH$1.csv' WITH CSV HEADER;"
+	
 	echo "Copying data from table $1 is Completed"
 }
 
