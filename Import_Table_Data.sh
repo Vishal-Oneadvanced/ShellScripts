@@ -2,6 +2,8 @@
 
 FLAG=true
 PROPERTY_FILE_NAME="Propeties.properties"
+instance_choice=$1
+ZIP_NAME=$2
 
 # Fucntions
 
@@ -12,8 +14,10 @@ echo () {
 
 function CopyData()
 {
-	#psql -h $HOST -p $instance_port -U $USER_NAME -d $DBNAME -c "\copy $1 from '$MAP_BACKUP_PATH/BackupFiles/$1.csv' DELIMITER ',' CSV HEADER";
+	psql -h $HOST -p $instance_port -U ${USER_NAME[$instance_choice]} -d ${DBNAME[$instance_choice]} -c "\copy $1 from '$MAP_BACKUP_PATH/BackupFiles/$1.csv' DELIMITER ',' CSV HEADER";
+	
 	echo "Import $1 is Completed"
+	
 }
 
 function read_Property_file()
@@ -37,8 +41,6 @@ function read_Property_file()
 
 #Script Start
 
-ZIP_NAME=$1
-
 read_Property_file
 
 echo $MAP_BACKUP_PATH
@@ -50,6 +52,9 @@ cd $MAP_BACKUP_PATH
 7z x $ZIP_NAME.zip -o./BackupFiles -aoa
 
 echo "Unzip is Completed"
+
+
+echo "$current_Directory"
 
 cd $current_Directory
 
@@ -80,24 +85,18 @@ if [[ $line == *"Waiting for connections..."* ]]; then
 	echo 'Set Encoding to UFT-8'
 	set PGCLIENTENCODING=utf-8
 
-	export PGPASSWORD=$DBPASSWORD
+	export PGPASSWORD=${DBPASSWORD[$instance_choice]}
 
 	echo "Connecting to Postgres and trying to Import Data"
 	
 	echo 'Import Table is takes some time.'
 	
-	for a in $MAP_NAMES
+	for a in $table_name
 	do
 		CopyData $a
 	done
 
 	echo 'Import map is Completed'
-	
-	POSTGRES_PORT=`netstat -ano | findstr :5432 | awk '{ gsub("\"","") ; print $5 }'`
-	
-	echo "Closing PostGres Port"
-	TSKILL $POSTGRES_PORT
-
 fi 
 done < $filename
 
