@@ -30,7 +30,7 @@ then
 else
   echo "$FILE_NAME_PROP not found."
 fi
- echo $filename
+
 #Checking if instance is connected
 while true
 do

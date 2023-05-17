@@ -37,7 +37,7 @@ fi
 
 echo "You have selected ${instance_name[$instance_choice]} environment"
 
-#aws sso login --profile default
+aws sso login --profile default
 
 current_Directory=`pwd`
 

@@ -53,9 +53,6 @@ cd $MAP_BACKUP_PATH
 
 echo "Unzip is Completed"
 
-
-echo "$current_Directory"
-
 cd $current_Directory
 
 echo "Starting the Importing the Files"

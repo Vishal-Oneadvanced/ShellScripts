@@ -5,7 +5,7 @@ echo 'Please Enter your Choice:-'
 echo 'Enter 0 for Connect new-dev-ui environment instance'
 echo 'Enter 1 for Connect deploy1 environment instance'
 echo 'Enter 2 for Connect deploy2 environment instance'
-echo 'Enter 3 for Connect deploy4 environment instance'
+echo 'Enter 3 for Connect deploy3 environment instance'
 read instance_choice
 
 echo "Enter a Zip File Name"

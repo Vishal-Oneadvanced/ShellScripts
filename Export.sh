@@ -13,7 +13,6 @@ echo "aws_instance id: $aws_instance_pid"
 
 sleep 2m
 
-echo "We are in"
 #Starting the export of data tables
 sh Export_Table_Data.sh $instance_choice &
 export_data_pid=$!
