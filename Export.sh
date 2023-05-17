@@ -11,21 +11,22 @@ sh start_aws_instance.sh $instance_choice &
 aws_instance_pid=$!
 echo "aws_instance id: $aws_instance_pid"
 
-sleep 1m
+sleep 2m
 
+echo "We are in"
 #Starting the export of data tables
 sh Export_Table_Data.sh $instance_choice &
 export_data_pid=$!
+
+#Wait for Export_Table_Data.sh to complete
+wait $export_data_pid
 
 #Deleting the temporary log file
 current_Directory=`pwd`
 rm $current_Directory/log.txt
 
-#Wait for Export_Table_Data.sh to complete
-wait $export_data_pid
-
 
 #Killing the process ids
 POSTGRES_PORT=`netstat -ano | findstr :5432 | awk '{ gsub("\"","") ; print $5 }'`
 echo $POSTGRES_PORT
-kill $POSTGRES_PORT
+TSKILL $POSTGRES_PORT
