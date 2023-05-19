@@ -22,10 +22,9 @@ wait $export_data_pid
 
 #Deleting the temporary log file
 current_Directory=`pwd`
+session_id=$(awk '/Starting session with SessionId:/ { print $NF }' log.txt)
 rm $current_Directory/log.txt
 
 
-#Killing the process ids
-POSTGRES_PORT=`netstat -ano | findstr :5432 | awk '{ gsub("\"","") ; print $5 }'`
-echo $POSTGRES_PORT
-TSKILL $POSTGRES_PORT
+#Killing the session
+aws ssm terminate-session --session-id $session_id

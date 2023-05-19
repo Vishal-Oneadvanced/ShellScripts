@@ -5,7 +5,7 @@ PROPERTY_FILE_NAME="Propeties.properties"
 instance_choice=$1
 ZIP_NAME=$2
 
-# Fucntions
+# Functions
 
 echo () {
 	builtin echo -n `date +"[%m-%d %H:%M:%S]"` ": INFO : "
@@ -93,7 +93,14 @@ if [[ $line == *"Waiting for connections..."* ]]; then
 		CopyData $a
 	done
 
-	echo 'Import map is Completed'
+	echo 'Import map is Completed'	
+	echo "Changing Directory"
+	cd $MAP_BACKUP_PATH	
+	
+	echo "Removing the Backupfile"
+	find . -type d ! -name "*.zip" -exec rm -r {} +
+	
+	echo "Removing of the Backupfile completed"
 fi 
 done < $filename
 

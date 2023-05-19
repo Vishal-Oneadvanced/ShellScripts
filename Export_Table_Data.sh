@@ -6,6 +6,11 @@ flag=true;
 instance_choice=$1
 
 # Functions
+echo () {
+	builtin echo -n `date +"[%m-%d %H:%M:%S]"` ": INFO : "
+	builtin echo $1
+}
+
 function CopyData()
 {
 	psql -h $HOST -p $instance_port -U ${USER_NAME[$instance_choice]} -d ${DBNAME[$instance_choice]} -c "\copy (select * from $1 where map like 'M%') TO '$MAP_BACKUP_PATH$1.csv' WITH CSV HEADER;"
